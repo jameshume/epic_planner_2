@@ -1,0 +1,25 @@
+.scrollable::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+    .scrollable::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .scrollable::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    .scrollable::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+.noselect { /* https://stackoverflow.com/a/9314458/1517244 */
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none;   /* Safari */
+    -khtml-user-select: none;    /* Konqueror HTML */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Internet Explorer/Edge */
+    user-select: none;           /* Non-prefixed version, currently supported by Chrome and Opera */
+}

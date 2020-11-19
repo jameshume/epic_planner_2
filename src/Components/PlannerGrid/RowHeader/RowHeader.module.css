@@ -1,0 +1,42 @@
+.rowHeader {
+  width: 200px;
+  border-radius: 10px;
+  border: 1px solid #8383b0;
+  overflow: hidden;
+  display: flex;
+}
+
+  .rowHeader > .rowHeaderSideBar {
+    width: 24px;
+    text-align: center;
+    background-color: #8383b0;
+    display: grid;
+    grid-template-rows:repeat(3, 1fr);
+    border-radius:10px;
+    box-shadow: 2px 0px 5px #555555;
+  }
+
+    .rowHeader > .rowHeaderSideBar > svg {
+      margin-left:4px; /*< TODO: why do I need this? */
+    }
+
+      .rowHeader > .rowHeaderSideBar > svg:nth-child(1) {
+        align-self: start;
+        margin-top: 5px;
+      }
+      .rowHeader > .rowHeaderSideBar > svg:nth-child(2) {
+        align-self: center;
+      }
+      .rowHeader > .rowHeaderSideBar > svg:nth-child(3) {
+        align-self: end;
+        margin-bottom: 5px;
+      }
+
+  .rowHeader > .rowHeaderSideBarSelected {
+    background-color: yellow;
+  }
+
+  .rowHeader > .rowHeaderContents {
+    padding: 0 5px 0 5px;
+    overflow:auto;
+  }

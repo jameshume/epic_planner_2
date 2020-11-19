@@ -1,0 +1,10 @@
+.grid {
+  display: grid;
+  padding: 10px;
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
+  height: 100%;
+  font-size: 12pt;
+  flex-grow:1;
+  overflow:auto;
+}

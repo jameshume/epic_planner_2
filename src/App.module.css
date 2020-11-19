@@ -1,0 +1,28 @@
+header, footer {
+  background-color: #b2b2cf;
+  margin: 0;
+}
+
+header {
+  height: 5vh;
+  border-bottom: 1px solid gray;
+  text-align: center;
+}
+
+footer {
+  height: 5vh;
+  text-align: center;
+  border-top: 1px solid gray;
+}
+
+main {
+  flex-grow:1;
+  height: 90vh;
+  display: flex;
+  flex-direction: row;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
