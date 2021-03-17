@@ -4,9 +4,11 @@
   "private": true,
   "main": "src/ElectronMain.js",
   "dependencies": {
+    "@aws-amplify/ui-react": "^1.0.5",
     "@testing-library/jest-dom": "^5.11.5",
     "@testing-library/react": "^11.1.1",
     "@testing-library/user-event": "^12.2.0",
+    "aws-amplify": "^3.3.24",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.5",
     "react": "^17.0.1",
