@@ -1,31 +1,8 @@
 import React, { useState } from 'react';
-
-import Amplify, { Auth } from 'aws-amplify';
+import { Auth } from 'aws-amplify';
 import Classes from './App.module.css';
 import PlannerGrid from './Components/PlannerGrid/PlannerGrid';
 import PlannerSideBar from './Components/PlannerSideBar/PlannerSideBar';
-
-Amplify.configure({
-    Auth: {
-        region: 'us-east-1',
-        userPoolId: 'us-east-1_79qI7j2wz',
-        userPoolWebClientId: '332d6s8mq87na571o9aebi7ri',
-        mandatorySignIn: true,
-        // TODO - Adding cookie storage stops the withAuthenticator displaying the app because
-        //        presumably it searches for a user in the cookie storage if its available but
-        //        doesn't find one. Maybe without it, it uses localStorage??
-        //cookieStorage: {
-        //    domain: '.jehtech.com',
-        //    path: '/',
-        //    expires: 30,
-        //    sameSite: "strict",
-        //    secure: true
-        //},
-        authenticationFlowType: 'USER_PASSWORD_AUTH',
-    }
-});
-
-
 
 async function signUp() {
     try {
@@ -39,8 +16,6 @@ async function signUp() {
     }
 }
 
-
-
 async function signIn(username, password) {
   try {
       const user = await Auth.signIn(username, password);
@@ -48,7 +23,6 @@ async function signIn(username, password) {
       console.log('error signing in', error);
   }
 }
-
 
 async function signOut() {
   try {
