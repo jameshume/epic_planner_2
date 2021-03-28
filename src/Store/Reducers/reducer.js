@@ -2,6 +2,8 @@ import { ImmutableItemGrid, ImmutableItem } from '../../DataStructures/DataGrid/
 import * as actionTypes from '../Actions/actions';
 
 const initialSate = {
+    user_email: null,
+    user_token: null,
     selected_item: null,
     grid: new ImmutableItemGrid([
         [ [],                    [new ImmutableItem()] ],
@@ -284,6 +286,18 @@ const reducer = (state=initialSate, action) => {
 
         case actionTypes.MOVE_CARD:
             new_state = moveCard(state, action);
+        break;
+
+        case actionTypes.REGISTER_USER:
+            new_state = state;
+        break;
+
+        case actionTypes.SIGNIN_USER:
+            new_state = state;
+        break;
+
+        case actionTypes.SIGNOUT_USER:
+            new_state = state;
         break;
 
         default:

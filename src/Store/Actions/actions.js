@@ -10,7 +10,9 @@ export const CREATE_NEW_ROW_ABOVE = "CREATE_NEW_ROW_ABOVE";
 export const CREATE_NEW_ROW_BELOW = "CREATE_NEW_ROW_BELOW";
 export const DELETE_ROW = "DELETE_ROW";
 export const MOVE_CARD = "MOVE_CARD"
-
+export const REGISTER_USER = "REGISTER_USER";
+export const SIGNIN_USER = "SIGNIN_USER";
+export const SIGNOUT_USER = "SIGNOUT_USER";
 
 export const createNewItemBelow = item_id => ({
     type: CREATE_NEW_ITEM_BELOW,
@@ -74,4 +76,20 @@ export const moveCard = (item_id, direction) => ({
     type: MOVE_CARD,
     item_id: item_id,
     direction: direction
+});
+
+export const registerUser = (username, password) => ({
+    type: REGISTER_USER,
+    username: username,
+    password: password
+});
+
+export const signInUser = (username, password) => ({
+    type: SIGNIN_USER,
+    username: username,
+    password: password
+});
+
+export const signOutUser = () => ({
+    type: SIGNOUT_USER,
 });
