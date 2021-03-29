@@ -1,9 +1,23 @@
 import React, { useState } from 'react';
-import { Auth } from 'aws-amplify';
+import Amplify, { Auth } from 'aws-amplify';
 import Classes from './App.module.css';
 import PlannerGrid from './Components/PlannerGrid/PlannerGrid';
 import PlannerSideBar from './Components/PlannerSideBar/PlannerSideBar';
+import SignInDialog from './Components/Dialogs/SignInDialog/SignInDialog';
+Amplify.configure({
+    Auth: {
+        region: 'us-east-1',
+        userPoolId: 'us-east-1_79qI7j2wz',
+        userPoolWebClientId: '332d6s8mq87na571o9aebi7ri',
+        mandatorySignIn: true,
+        // TODO - Adding cookie storage stops the withAuthenticator displaying the app because
+        //        presumably it searches for a user in the cookie storage if its available but
+        //        doesn't find one. Maybe without it, it uses localStorage??
+        authenticationFlowType: 'USER_PASSWORD_AUTH',
+    }
+});
 
+// https://docs.amplify.aws/lib/auth/emailpassword/q/platform/js
 async function signUp() {
     try {
         const { user } = await Auth.signUp({
@@ -16,13 +30,7 @@ async function signUp() {
     }
 }
 
-async function signIn(username, password) {
-  try {
-      const user = await Auth.signIn(username, password);
-  } catch (error) {
-      console.log('error signing in', error);
-  }
-}
+
 
 async function signOut() {
   try {
@@ -49,64 +57,24 @@ const _PageDefaultState = _STATES.RUNNING;
 const App = (props) => {
     const [userState, setUserState] = useState(_UserDefaultState);
     const [pageState, setPageState] = useState(_PageDefaultState);
-    const [emailState, setEmailState] = useState(null);
-    const [passwordState, setPasswordState] = useState(null);
 
     return (
         <>
-            <div className={Classes.user_dialog}
-                style={{display: (pageState === _STATES.SHOW_SIGNIN ? "flex" : "none")}}
-                onClick={() => setPageState(_STATES.RUNNING)}
-            >
-                <dialog open={pageState === _STATES.SHOW_SIGNIN}
-                    onClick={(e) => {e.stopPropagation();}}
-                >
-                <h1
-                    style={{margin: "0 0 15px 0"}}
-                >Sign In</h1>
-                    <div>
-                        <div
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: "1fr 2fr"
-                            }}
-                        >
-                            <label>Email: </label>
-                            <input onChange={(e) => setEmailState(e.target.value)} value={emailState}
-                                style={{marginBottom: "10px"}}
-                            />
-                            <label>Password: </label>
-                            <input type="password" onChange={(e) => setPasswordState(e.target.value)} value={passwordState}
-                                style={{marginBottom: "10px"}}
-                            />
-                        </div>
-                        <div
-                            style={{display: "flex", flexDirection: 'row-reverse'}}
-                        >
-                            <button
-                                onClick={
-                                    async () => {
-                                        try {
-                                            const user = await Auth.signIn(emailState, passwordState);
-                                            setUserState({username: emailState, token: user})
-                                            setPageState(_STATES.RUNNING)
-                                        }
-                                        catch (err) {
-                                            alert(err.message);
-                                        }
-                                    }
-                                }
-                                style={{marginLeft: "10px"}}
-                            >Sign In</button>
-                            <button onClick={() => {setPageState(_STATES.RUNNING)}}>Cancel</button>
-                        </div>
-                    </div>
-                </dialog>
-            </div>
+            <SignInDialog
+                isOpen={ pageState === _STATES.SHOW_SIGNIN }
+                onClose={ () => setPageState(_STATES.RUNNING) }
+                signInFunc={ async (username, password) => await Auth.signIn(username, password) }
+                onSignIn={
+                    (username, usertoken) => {
+                        setUserState({username: username, token: usertoken})
+                        setPageState(_STATES.RUNNING)
+                    }
+                }
+            />
 
             <div className={Classes.App}>
                 <header>
-                    <div style={{width: "100%", height: "100%", "grid-template-columns": "1fr 1fr 1fr", display: "grid"}}>
+                    <div style={{width: "100%", height: "100%", gridTemplateColumns: "1fr 1fr 1fr", display: "grid"}}>
                         <div style={{textAlign:"left",  margin: "auto 0 auto 1rem"}}>
                             {
                                 userState.username !== null
