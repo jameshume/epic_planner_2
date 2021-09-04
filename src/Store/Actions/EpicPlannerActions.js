@@ -77,19 +77,3 @@ export const moveCard = (item_id, direction) => ({
     item_id: item_id,
     direction: direction
 });
-
-export const registerUser = (username, password) => ({
-    type: REGISTER_USER,
-    username: username,
-    password: password
-});
-
-export const signInUser = (username, password) => ({
-    type: SIGNIN_USER,
-    username: username,
-    password: password
-});
-
-export const signOutUser = () => ({
-    type: SIGNOUT_USER,
-});

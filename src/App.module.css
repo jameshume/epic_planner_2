@@ -52,3 +52,7 @@ header button {
   padding: 5px;
   background: rgb(255, 255, 255);
 }
+
+header button:hover{
+  border: 2px solid black;
+}

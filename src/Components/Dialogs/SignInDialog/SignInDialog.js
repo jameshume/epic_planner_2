@@ -4,6 +4,10 @@ import Dialog from '../../../Containers/Dialog/Dialog';
 import BarsSpinner from '../../../Containers/BarsSpinner/BarsSpinner';
 import Classes from './SignInDialog.module.css';
 
+function yo() {
+    
+}
+
 const SignInDialog = (props) => {
     const [isBusy, setBusy] = useState(false);
     const [emailValue, setEmailValue] = useState("");
@@ -11,33 +15,42 @@ const SignInDialog = (props) => {
     const [errorString, setErrorString] = useState(null);
 
     const doSignIn = async (username, password) => {
+        console.debug("Signing in...")
         setBusy(true);
         try {
-            console.log(`SIGN IN ${username} ${password}`)
             const token = await props.signInFunc(username, password);
             props.onSignIn(username, token);
         }
         catch(err) {
+            console.error(err);
             setErrorString(err.message);
         }
         finally {
             setBusy(false);
+            console.debug("Done signing in")
         }
     };
 
+    const doCancel = () => {
+        setEmailValue("");
+        setPasswordValue("");
+        setErrorString(null);
+        props.onClose();
+    }
+
     if (isBusy) {
         return (
-            <Dialog isOpen={props.isOpen} onClose={props.onClose}>
+            <Dialog isOpen={props.isOpen} onClose={doCancel}>
                 <div className={Classes.signInDialog}>
                     <h1 style={{margin: "0 0 15px 0"}}>Sign In</h1>
-                    <BarsSpinner height="10px" width="10px"/>
+                    <BarsSpinner/>
                 </div>
             </Dialog>
         );
     }
 
     return (
-        <Dialog isOpen={props.isOpen} onClose={props.onClose}>
+        <Dialog isOpen={props.isOpen} onClose={doCancel}>
             <div className={Classes.signInDialog}>
                 <h1 style={{margin: "0 0 15px 0"}}>Sign In</h1>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr" }}>
@@ -73,7 +86,11 @@ const SignInDialog = (props) => {
                     >
                         Sign In
                     </button>
-                    <button onClick={props.onClose}>Cancel</button>
+                    <button onClick={doCancel}>Cancel</button>
+                </div>
+
+                <div style={{fontSize: "small"}}>
+                    <a href="#" onClick={yo}>Forgot password!</a>
                 </div>
 
                 {

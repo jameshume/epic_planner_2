@@ -1,13 +1,11 @@
 import { ImmutableItemGrid, ImmutableItem } from '../../DataStructures/DataGrid/DataGrid';
-import * as actionTypes from '../Actions/actions';
+import * as actionTypes from '../Actions/EpicPlannerActions';
 
 const initialSate = {
-    user_email: null,
-    user_token: null,
     selected_item: null,
     grid: new ImmutableItemGrid([
-        [ [],                    [new ImmutableItem()] ],
-        [ [new ImmutableItem()], [] ]
+        [ [                   ], [new ImmutableItem()] ],
+        [ [new ImmutableItem()], [                   ] ]
     ])
 };
 

@@ -115,10 +115,10 @@ class plannerGrid extends React.Component {
 }
 
 // How state, managed by redux, should be mapped to props that can be accessed in this component
-// The state parameter is the state as setup in reducedr.js so it will have those propertues.
+// The state parameter is the state as setup in reducer.js so it will have those properties.
 const mapStateToProps = state => { // Func that expects the state, stored in redux and returns a map
     return {
-        grid: state.grid
+        grid: state.epicPlanner.grid
     };
 }
 

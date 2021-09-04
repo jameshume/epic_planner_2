@@ -2,7 +2,7 @@ import React from 'react';
 
 // Redux related imports
 import { connect } from 'react-redux';
-import * as actionTypes from '../../../../Store/Actions/actions';
+import * as actionTypes from '../../../../Store/Actions/EpicPlannerActions';
 
 // Component dependencies
 import Classes from './CardBody.module.css';
@@ -25,7 +25,7 @@ class cardBody extends React.Component {
 // The state parameter is the state as setup in reducedr.js so it will have those propertues.
 const mapStateToProps = state => { // Func that expects the state, stored in redux and returns a map
   return {
-      grid: state.grid._grid,
+      grid: state.epicPlanner.grid._grid,
   };
 }
 

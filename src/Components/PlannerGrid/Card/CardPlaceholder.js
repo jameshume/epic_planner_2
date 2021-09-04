@@ -2,7 +2,7 @@ import React from 'react';
 
 // Redux related imports
 import { connect } from 'react-redux';
-import * as actionTypes from '../../../Store/Actions/actions';
+import * as actionTypes from '../../../Store/Actions/EpicPlannerActions';
 
 import Classes from './Card.module.css';
 import CommonClasses from '../../../Common/Common.module.css';

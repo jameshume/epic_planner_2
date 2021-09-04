@@ -2,7 +2,7 @@ import React from 'react';
 
 // Redux related imports
 import { connect } from 'react-redux';
-import * as actionTypes from '../../../Store/Actions/actions';
+import * as actionTypes from '../../../Store/Actions/EpicPlannerActions';
 
 import Classes from './RowHeader.module.css';
 import InsertIcon from '../../Icons/InsertIcon';
@@ -67,8 +67,8 @@ class rowHeader extends React.Component {
 // The state parameter is the state as setup in reducedr.js so it will have those propertues.
 const mapStateToProps = state => { // Func that expects the state, stored in redux and returns a map
     return {
-        selected_item: state.selected_item,
-        grid: state.grid,
+        selected_item: state.epicPlanner.selected_item,
+        grid: state.epicPlanner.grid,
     };
 }
 
