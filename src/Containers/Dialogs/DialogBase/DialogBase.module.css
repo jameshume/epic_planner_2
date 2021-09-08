@@ -1,4 +1,4 @@
-.user_dialog {
+.dialogBaseBackground {
   position: absolute;
   top: 0;
   left: 0;
@@ -10,7 +10,15 @@
   align-content: center;
 }
 
-.user_dialog  dialog {
+.dialogBaseVisible {
+  display: flex;
+}
+
+.dialogBaseHidden {
+  display: none;
+}
+
+.dialogBaseBackground dialog {
   opacity: 1.0;
   z-index: 999;
   position: relative;

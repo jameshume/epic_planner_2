@@ -1,0 +1,7 @@
+.errorFragment {
+  margin-top: 20px;
+  padding: 0.5rem;
+  background: red;
+  border-radius: 5px;
+  font-weight: bold;
+}

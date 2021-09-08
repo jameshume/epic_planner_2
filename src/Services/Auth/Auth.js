@@ -80,16 +80,36 @@ export function signIn(username, password) {
     });
 }
 
-export function signOut(username) {
-    const cognitoUser = new CognitoUser({Username: username, Pool: userPool});
-    cognitoUser.signOut();
+export function signOut() {
+    return new Promise( resolve => {
+        const cognitoUser = userPool.getCurrentUser()
+        if (cognitoUser !== null) {
+            cognitoUser.signOut(() => resolve());
+        }
+        else {
+            resolve();
+        }
+    });
 }
 
-export function globalSignOut(username) {
-    const cognitoUser = new CognitoUser({Username: username, Pool: userPool});
-    cognitoUser.globalSignOut();
+export function globalSignOut() {
+    return new Promise( (resolve, reject) => {
+        const cognitoUser = userPool.getCurrentUser();
+        if (cognitoUser !== null) {
+            cognitoUser.globalSignOut({
+                onSuccess: msg => resolve(msg),
+                onFailure: err => reject(err)
+            });
+        }
+        else {
+            resolve();
+        }
+    });
 }
 
 export function getCurrentUser() {
-    return userPool.getCurrentUser();
+    const user = userPool.getCurrentUser();
+    console.debug("USER IS ");
+    console.debug(user);
+    return user;
 }

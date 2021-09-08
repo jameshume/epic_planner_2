@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import Dialog from '../../../Containers/Dialog/Dialog';
-import BarsSpinner from '../../../Containers/BarsSpinner/BarsSpinner';
-import Classes from './SignUpDialog.module.css';
+import HeadedDialog from '../../../Containers/Dialogs/HeadedDialog/HeadedDialog';
+import BusyDialog from '../../../Containers/Dialogs/BusyDialog/BusyDialog';
+import ErrorFragment from '../../../Containers/Fragments/ErrorFragment/ErrorFragment';
 import * as Auth from '../../../Services/Auth/Auth';
 
 
@@ -14,93 +14,56 @@ const __STATES = Object.freeze({
 
 
 
-const BusySignUpDialog = (props) => (
-    <Dialog isOpen={props.isOpen} onClose={props.doClose}>
-        <div className={Classes.signUpDialog}>
-            <h1 style={{margin: "0 0 15px 0"}}>Sign In</h1>
-            <BarsSpinner/>
-        </div>
-    </Dialog>
-);
-
-BusySignUpDialog.propTypes = {
-    isOpen: PropTypes.bool.isRequired,
-    doClose: PropTypes.func.isRequired,
-};
-
-
-
-const ErrorFragment = (props) => {
-    let errorFragment = null;
-    if (props?.errorString) {
-        errorFragment = (
-            <div style={{marginTop: "20px", padding: "0.5rem", background: 'red'}}>
-                {props.errorString}
-            </div>
-        );
-    }
-    return errorFragment;
-}
-
-ErrorFragment.propTypes = {
-    errorString: PropTypes.string,
-};
-
-
-
 const EnterUsernameAndPasswordSignupDialog = (props) => (
-    <Dialog isOpen={props.isOpen} onClose={props.doClose}>
-        <div className={Classes.signUpDialog}>
-            <h1 style={{margin: "0 0 15px 0"}}>Sign Up</h1>
-            <p>
-                Please enter the email address that you would like to use to log into
-                your account. The password must be at least 8 characters long and
-                contain at least 1 symbol, 1 number and 1 capital.
-            </p>
-            <p>
-                Once you have registered a confirmation code will be sent to you email
-                address, which you must then enter to confirm your account. Once this is
-                done you will be automatically signed in.
-            </p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr" }}>
-                <label htmlFor='sign_up_email'>Email:</label>
-                <input
-                    onChange={(e) => props.setEmailValue(e.target.value)}
-                    value={props.emailValue}
-                    style={{marginBottom: "10px"}}
-                    name='sign_up_email'
-                />
+    <HeadedDialog isOpen={props.isOpen} onClose={props.doClose} title="Sign Up">
+        <p>
+            Please enter the email address that you would like to use to log into
+            your account. The password must be at least 8 characters long and
+            contain at least 1 symbol, 1 number and 1 capital.
+        </p>
+        <p>
+            Once you have registered a confirmation code will be sent to you email
+            address, which you must then enter to confirm your account. Once this is
+            done you will be automatically signed in.
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr" }}>
+            <label htmlFor='sign_up_email'>Email:</label>
+            <input
+                onChange={(e) => props.setEmailValue(e.target.value)}
+                value={props.emailValue}
+                style={{marginBottom: "10px"}}
+                name='sign_up_email'
+            />
 
-                <label htmlFor='sign_up_password'>Password:</label>
-                <input
-                    type="password"
-                    onChange={(e) => props.setPasswordValue(e.target.value)}
-                    value={props.passwordValue}
-                    style={{marginBottom: "10px"}}
-                    name='sign_up_password'
-                    onKeyPress={
-                        (event) => {
-                            if(event.key === 'Enter') {
-                                props.doSignUp(props.emailValue, props.passwordValue);
-                            }
+            <label htmlFor='sign_up_password'>Password:</label>
+            <input
+                type="password"
+                onChange={(e) => props.setPasswordValue(e.target.value)}
+                value={props.passwordValue}
+                style={{marginBottom: "10px"}}
+                name='sign_up_password'
+                onKeyPress={
+                    (event) => {
+                        if(event.key === 'Enter') {
+                            props.doSignUp(props.emailValue, props.passwordValue);
                         }
                     }
-                />
-            </div>
-
-            <div style={{display: "flex", flexDirection: 'row-reverse'}}>
-                <button
-                    onClick={ () => props.doSignUp(props.emailValue, props.passwordValue) }
-                    style={{marginLeft: "10px"}}
-                >
-                    Sign Up
-                </button>
-                <button onClick={props.doClose}>Cancel</button>
-            </div>
-
-            <ErrorFragment errorString={props.errorString}/>
+                }
+            />
         </div>
-    </Dialog>
+
+        <div style={{display: "flex", flexDirection: 'row-reverse'}}>
+            <button
+                onClick={ () => props.doSignUp(props.emailValue, props.passwordValue) }
+                style={{marginLeft: "10px"}}
+            >
+                Sign Up
+            </button>
+            <button onClick={props.doClose}>Cancel</button>
+        </div>
+
+        <ErrorFragment errorString={props.errorString}/>
+    </HeadedDialog>
 );
 
 EnterUsernameAndPasswordSignupDialog.propTypes = {
@@ -117,53 +80,50 @@ EnterUsernameAndPasswordSignupDialog.propTypes = {
 
 
 const ConfirmUserSignupDialog = (props) => (
-    <Dialog isOpen={props.isOpen} onClose={props.doClose}>
-        <div className={Classes.signUpDialog}>
-            <h1 style={{margin: "0 0 15px 0"}}>Sign Up</h1>
-            <p>
-                An email has been sent to your email account, <code>{props.emailValue}</code>,
-                with a confirmation code. Please enter that code below:
-            </p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr" }}>
-                <label htmlFor='sign_up_code'>Confirmation Code:</label>
-                <input
-                    onChange={(e) => props.setConfirmationCode(e.target.value)}
-                    value={props.confirmationCode}
-                    style={{marginBottom: "10px"}}
-                    name='sign_up_code'
-                    onKeyPress={
-                        (event) => {
-                            if(event.key === 'Enter') {
-                                props.doConfirm(props.emailValue, props.confirmationCode);
-                            }
+    <HeadedDialog isOpen={props.isOpen} onClose={props.doClose} title="Sign Up">
+        <p>
+            An email has been sent to your email account, <code>{props.emailValue}</code>,
+            with a confirmation code. Please enter that code below:
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr" }}>
+            <label htmlFor='sign_up_code'>Confirmation Code:</label>
+            <input
+                onChange={(e) => props.setConfirmationCode(e.target.value)}
+                value={props.confirmationCode}
+                style={{marginBottom: "10px"}}
+                name='sign_up_code'
+                onKeyPress={
+                    (event) => {
+                        if(event.key === 'Enter') {
+                            props.doConfirm(props.emailValue, props.confirmationCode);
                         }
                     }
-                />
-            </div>
-
-            <div style={{display: "flex", flexDirection: 'row-reverse'}}>
-                <button
-                    onClick={ () => props.doConfirm(props.emailValue, props.confirmationCode) }
-                    style={{marginLeft: "10px"}}
-                >
-                    Confirm
-                </button>
-                <button onClick={props.doClose}>Cancel</button>
-            </div>
-
-            <p>
-                <a
-                    href="#"
-                    style={{fontSize: "smaller"}}
-                    onClick={() => Auth.resendConfirmationCode(props.emailValue)}
-                >
-                    Resend confirmation code...
-                </a>
-            </p>
-
-            <ErrorFragment errorString={props.errorString}/>
+                }
+            />
         </div>
-    </Dialog>
+
+        <div style={{display: "flex", flexDirection: 'row-reverse'}}>
+            <button
+                onClick={ () => props.doConfirm(props.emailValue, props.confirmationCode) }
+                style={{marginLeft: "10px"}}
+            >
+                Confirm
+            </button>
+            <button onClick={props.doClose}>Cancel</button>
+        </div>
+
+        <p>
+            <a
+                href="#"
+                style={{fontSize: "smaller"}}
+                onClick={() => Auth.resendConfirmationCode(props.emailValue)}
+            >
+                Resend confirmation code...
+            </a>
+        </p>
+
+        <ErrorFragment errorString={props.errorString}/>
+    </HeadedDialog>
 );
 
 ConfirmUserSignupDialog.propTypes = {
@@ -232,7 +192,7 @@ const SignUpDialog = (props) => {
     let dialogEl = null;
 
     if (isBusy) {
-        dialogEl = <BusySignUpDialog isOpen={props.isOpen} doClose={doClose}/>
+        dialogEl =  <BusyDialog isOpen={props.isOpen} onClose={doClose} title="Sign Up"/>
     }
     else if (op === __STATES.SIGN_UP) {
         dialogEl = <EnterUsernameAndPasswordSignupDialog

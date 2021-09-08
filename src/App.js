@@ -30,16 +30,12 @@ const _STATES = Object.freeze({
     SHOW_SAVE_AS_DIALOG: 5,
 });
 
-const _UserDefaultState = {
-    username: null,
-    token: null,
-};
 
 const _PageDefaultState = _STATES.RUNNING;
 
 
 const App = (props) => {
-    const [userState, setUserState] = useState(_UserDefaultState);
+    const [userName, setUserName] = useState("");
     const [pageState, setPageState] = useState(_PageDefaultState);
     const grid = useSelector(state => state.grid);
 
@@ -51,18 +47,36 @@ const App = (props) => {
             <SignUpDialog
                 isOpen={pageState === _STATES.SHOW_REGISTER}
                 onClose={() => setPageState(_STATES.RUNNING)}
-                onSignedUp={()=> {}}
-                onConfirmed={() => {setPageState(_STATES.RUNNING)}}
+                onSignedUp={(result)=> {}}
+                onConfirmed={(result) => { setPageState(_STATES.SHOW_SIGNIN_DIALOG) }}
             />
+
+            <SignInDialog
+                isOpen={pageState === _STATES.SHOW_SIGNIN_DIALOG}
+                onClose={() => setPageState(_STATES.RUNNING)}
+                onSignedIn={(result) => { setUserName(result); setPageState(_STATES.RUNNING) }}
+            />
+
+
 
             <div className={Classes.App}>
                 <header>
                     <div style={{width: "100%", height: "100%", gridTemplateColumns: "1fr 1fr 1fr", display: "grid"}}>
                         <div style={{textAlign:"left",  margin: "auto 0 auto 1rem"}}>
                             {
-                                true //userState.username !== null
+                                Auth.getCurrentUser() !== null
                                     ? <>
-                                        <button style={{marginRight: "0.25rem"}}>New</button>
+                                        <button
+                                            style={{marginRight: "0.25rem"}}
+                                            onClick={() => {
+                                                Auth.getCurrentUser()?.getSession((err, session) => {
+                                                    console.error(err);
+                                                    console.info(session);
+                                                });
+                                            }}
+                                        >
+                                            New
+                                        </button>
                                         <button
                                             style={{marginRight: "0.25rem"}}
                                             onClick={() => setPageState(_STATES.SHOW_SAVE_DIALOG)}
@@ -92,9 +106,11 @@ const App = (props) => {
                                       </>)
                                     : <button
                                         onClick={
-                                            () => {
-                                                Auth.signOut();
-                                                setUserState(_UserDefaultState);
+                                            async () => {
+                                                await Auth.signOut();
+                                                setUserName("");
+                                                console.debug("Should now be signed out")
+                                                console.debug(Auth.getCurrentUser())
                                             }
                                         }
                                       >Sign Out</button>
