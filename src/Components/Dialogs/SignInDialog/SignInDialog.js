@@ -3,48 +3,28 @@ import PropTypes from 'prop-types';
 import HeadedDialog from '../../../Containers/Dialogs/HeadedDialog/HeadedDialog';
 import BusyDialog from '../../../Containers/Dialogs/BusyDialog/BusyDialog';
 import * as Auth from '../../../Services/Auth/Auth';
-import Classes from './SignInDialog.module.css';
 import ErrorFragment from '../../../Containers/Fragments/ErrorFragment/ErrorFragment';
-
+import GridForm from '../../GridForm/GridForm';
+import Classes from './SignInDialog.module.css';
 
 
 const EnterUsernameAndPasswordSignInDialog = (props) => (
     <HeadedDialog isOpen={props.isOpen} onClose={props.doCancel} title="Sign In">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr" }}>
-            <label htmlFor='signin_email'>Email:</label>
-            <input
-                onChange={(e) => props.setEmailValue(e.target.value)}
-                value={props.emailValue}
-                style={{marginBottom: "10px"}}
-                name='signin_email'
-            />
-
-            <label htmlFor='signin_password'>Password:</label>
-            <input
-                type="password"
-                onChange={(e) => props.setPasswordValue(e.target.value)}
-                value={props.passwordValue}
-                style={{marginBottom: "10px"}}
-                name='signin_password'
-                onKeyPress={
-                    (event) => {
-                        if(event.key === 'Enter'){
-                            props.doSignIn(props.emailValue, props.passwordValue)
-                        }
-                    }
+        <GridForm
+            onSubmit={(values)=>props.doSignIn(values['email'], values['password'])}
+            onCancel={props.doCancel}
+            inputs={[
+                {
+                    name: "email", label: "Email", type: "email",
+                    validateFunc: (value) => value.includes("@") ? null : "Invalid email address"
+                },
+                {
+                    name: "password", label: "Password", type: "password",
+                    validateFunc: (value) => value.length > 5 ? null : "Password too short"
                 }
-            />
-        </div>
-
-        <div style={{display: "flex", flexDirection: 'row-reverse'}}>
-            <button
-                onClick={ () => props.doSignIn(props.emailValue, props.passwordValue) }
-                style={{marginLeft: "10px"}}
-            >
-                Sign In
-            </button>
-            <button onClick={props.doCancel}>Cancel</button>
-        </div>
+            ]}
+            reactKeyPrefix="SignInDialog_"
+        />
 
         <div style={{fontSize: "small"}}>
             <a href="#" onClick={props.doForgotPassword}>Forgot password!</a>
