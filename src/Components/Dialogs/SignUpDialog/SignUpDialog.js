@@ -4,6 +4,8 @@ import HeadedDialog from '../../../Containers/Dialogs/HeadedDialog/HeadedDialog'
 import BusyDialog from '../../../Containers/Dialogs/BusyDialog/BusyDialog';
 import ErrorFragment from '../../../Containers/Fragments/ErrorFragment/ErrorFragment';
 import * as Auth from '../../../Services/Auth/Auth';
+import GridForm from '../../GridForm/GridForm';
+import {validateEmailFunc, validatePasswordFunc} from '../../GridForm/GridFromValidators';
 
 
 
@@ -14,57 +16,58 @@ const __STATES = Object.freeze({
 
 
 
-const EnterUsernameAndPasswordSignupDialog = (props) => (
-    <HeadedDialog isOpen={props.isOpen} onClose={props.doClose} title="Sign Up">
-        <p>
-            Please enter the email address that you would like to use to log into
-            your account. The password must be at least 8 characters long and
-            contain at least 1 symbol, 1 number and 1 capital.
-        </p>
-        <p>
-            Once you have registered a confirmation code will be sent to you email
-            address, which you must then enter to confirm your account. Once this is
-            done you will be automatically signed in.
-        </p>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr" }}>
-            <label htmlFor='sign_up_email'>Email:</label>
-            <input
-                onChange={(e) => props.setEmailValue(e.target.value)}
-                value={props.emailValue}
-                style={{marginBottom: "10px"}}
-                name='sign_up_email'
-            />
-
-            <label htmlFor='sign_up_password'>Password:</label>
-            <input
-                type="password"
-                onChange={(e) => props.setPasswordValue(e.target.value)}
-                value={props.passwordValue}
-                style={{marginBottom: "10px"}}
-                name='sign_up_password'
-                onKeyPress={
-                    (event) => {
-                        if(event.key === 'Enter') {
-                            props.doSignUp(props.emailValue, props.passwordValue);
-                        }
+const EnterUsernameAndPasswordSignupDialog = (props) => {
+    return (
+        <HeadedDialog isOpen={props.isOpen} onClose={props.doClose} title="Sign Up">
+            <p style={{fontSize: "smaller"}}>
+                Please enter the email address that you would like to use to log into
+                your account. The password must be at least 8 characters long and
+                contain at least 1 symbol, 1 number and 1 capital.
+            </p>
+            <p style={{fontSize: "smaller"}}>
+                Once you have registered, a confirmation code will be sent to you email
+                address, which you must then enter to confirm your account. Once this is
+                done you will be able to sign in.
+            </p>
+            <GridForm
+                onSubmit={
+                    (values) => {
+                        props.setEmailValue(values['email']);
+                        return props.doSignUp(values['email'], values['password']);
                     }
                 }
-            />
-        </div>
-
-        <div style={{display: "flex", flexDirection: 'row-reverse'}}>
-            <button
-                onClick={ () => props.doSignUp(props.emailValue, props.passwordValue) }
-                style={{marginLeft: "10px"}}
+                onCancel={() => props.doClose()}
+                inputs={[
+                    {
+                        name: "email", label: "Email", type: "email", autocomplete: "email",
+                        validateFunc: (values) => validateEmailFunc("email", values)
+                    },
+                    {
+                        name: "password", label: "Password", type: "password",
+                        autocomplete: "password",
+                        validateFunc: (values) => validatePasswordFunc("password", values)
+                    },
+                    {
+                        name: "password2", label: "Confirm Password", type: "password",
+                        autocomplete: "password",
+                        validateFunc: (values) => {
+                            let result = validatePasswordFunc("password2", values);
+                            if (
+                                (result === null) &&
+                                (values["password"] !== values["password2"])
+                            ) {
+                                result = "Passwords do not match"
+                            }
+                            return result;
+                        }
+                    }
+                ]}
             >
-                Sign Up
-            </button>
-            <button onClick={props.doClose}>Cancel</button>
-        </div>
-
-        <ErrorFragment errorString={props.errorString}/>
-    </HeadedDialog>
-);
+            </GridForm>
+            <ErrorFragment errorString={props.errorString}/>
+        </HeadedDialog>
+    );
+};
 
 EnterUsernameAndPasswordSignupDialog.propTypes = {
     isOpen: PropTypes.bool.isRequired,
@@ -85,33 +88,16 @@ const ConfirmUserSignupDialog = (props) => (
             An email has been sent to your email account, <code>{props.emailValue}</code>,
             with a confirmation code. Please enter that code below:
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr" }}>
-            <label htmlFor='sign_up_code'>Confirmation Code:</label>
-            <input
-                onChange={(e) => props.setConfirmationCode(e.target.value)}
-                value={props.confirmationCode}
-                style={{marginBottom: "10px"}}
-                name='sign_up_code'
-                onKeyPress={
-                    (event) => {
-                        if(event.key === 'Enter') {
-                            props.doConfirm(props.emailValue, props.confirmationCode);
-                        }
-                    }
+        <GridForm
+            onSubmit={values => props.doConfirm(props.emailValue, values["conf_code"])}
+            onCancel={() => props.doClose()}
+            inputs={[
+                {
+                    name: "conf_code", label: "Confirmation code", type: "input", autocomplete: "off",
+                    validateFunc: (values) => null
                 }
-            />
-        </div>
-
-        <div style={{display: "flex", flexDirection: 'row-reverse'}}>
-            <button
-                onClick={ () => props.doConfirm(props.emailValue, props.confirmationCode) }
-                style={{marginLeft: "10px"}}
-            >
-                Confirm
-            </button>
-            <button onClick={props.doClose}>Cancel</button>
-        </div>
-
+            ]}
+        />
         <p>
             <a
                 href="#"
@@ -154,29 +140,41 @@ const SignUpDialog = (props) => {
             completeFunc(result);
             if (completeState !== null) { setOp(completeState); }
         }
-        catch(err) {
-            setErrorString(`Failed to ${completeState}: ${err.message}`);
-        }
         finally {
             setBusy(false);
         }
     };
 
-    const doSignUp = (username, password) => {
+    const doSignUp = async (username, password) => {
         console.debug(`doSignUp(${username}, ${password})`);
-        doAction(
-            () => Auth.signUpUser(username, password),
-            (result) => props.onSignedUp(username, result),
-            __STATES.CONFIRM
-        );
+        try {
+            await doAction(
+                () => Auth.signUpUser(username, password),
+                (result) => props.onSignedUp(username, result),
+                __STATES.CONFIRM
+            );
+        }
+        catch (err) {
+            if (err.code === 'UsernameExistsException') {
+                setErrorString(`Failed to sign up user: You have already signed up`);
+            }
+            else {
+                setErrorString(`Failed to sign up user: ${err.message}`);
+            }
+        }
     };
 
     const doConfirm = (username, confirmationCode) => {
-        doAction(
-            () => Auth.confirmUser(username, confirmationCode),
-            (result) => props.onConfirmed(username, result),
-            __STATES.SIGN_UP
-        );
+        try {
+            doAction(
+                () => Auth.confirmUser(username, confirmationCode),
+                (result) => props.onConfirmed(username, result),
+                __STATES.SIGN_UP
+            );
+        }
+        catch (err) {
+            setErrorString(`Failed to process confirmation code: ${err.message}`);
+        }
     };
 
     const doClose = () => {

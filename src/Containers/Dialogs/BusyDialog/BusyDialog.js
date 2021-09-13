@@ -3,14 +3,14 @@ import HeadedDialog from '../HeadedDialog/HeadedDialog';
 import BarsSpinner from '../../BarsSpinner/BarsSpinner';
 
 const BusyDialog = (props) => (
-  <HeadedDialog isOpen={props.isOpen} onClose={props.doClose} title={props.title}>
+  <HeadedDialog isOpen={props.isOpen} onClose={props.onClose} title={props.title}>
     <BarsSpinner/>
   </HeadedDialog>
 );
 
 BusyDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  doClose: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired
 };
 

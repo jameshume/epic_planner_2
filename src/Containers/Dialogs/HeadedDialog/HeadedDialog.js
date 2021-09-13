@@ -3,7 +3,7 @@ import DialogBase from '../DialogBase/DialogBase';
 import Classes from './HeadedDialog.module.css';
 
 const HeadedDialog = (props) => (
-  <DialogBase isOpen={props.isOpen} onClose={props.doClose}>
+  <DialogBase isOpen={props.isOpen} onClose={props.onClose}>
       <div className={Classes.headedDialog}>
           <h1>{props.title}</h1>
           {props.children}
@@ -13,7 +13,7 @@ const HeadedDialog = (props) => (
 
 HeadedDialog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
-  doClose: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
