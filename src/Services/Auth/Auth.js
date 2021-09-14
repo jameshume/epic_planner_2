@@ -68,6 +68,18 @@ export function userForgotPassword(username) {
     });
 }
 
+export function userConfirmPassword(username, verificationCode, newPassword) {
+    return new Promise( (resolve, reject) => {
+        const cognitoUser = new CognitoUser({Username: username, Pool: userPool});
+        cognitoUser.confirmPassword(verificationCode, newPassword,
+            {
+                onSuccess: success_str => resolve(success_str),
+                onFailure: (err) => reject(err)
+            }
+        );
+    });
+}
+
 export function signIn(username, password) {
     return new Promise( (resolve, reject) => {
         const authDetails = new AuthenticationDetails({Username: username, Password: password});

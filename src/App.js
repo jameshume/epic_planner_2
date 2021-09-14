@@ -9,6 +9,7 @@ import Classes from './App.module.css';
 // Dialogs
 import SignInDialog from './Components/Dialogs/SignInDialog/SignInDialog';
 import SignUpDialog from './Components/Dialogs/SignUpDialog/SignUpDialog';
+import ForgotPasswordDialog from './Components/Dialogs/ForgotPasswordDialog/ForgotPasswordDialog';
 import SaveDialog from './Components/Dialogs/SaveDialog/SaveDialog';
 import SaveAsDialog from './Components/Dialogs/SaveAsDialog/SaveAsDialog';
 
@@ -28,6 +29,7 @@ const _STATES = Object.freeze({
     SHOW_SIGNIN_DIALOG:  3,
     SHOW_SAVE_DIALOG:    4,
     SHOW_SAVE_AS_DIALOG: 5,
+    SHOW_FORGOT_PASSWORD_DIALOG: 6,
 });
 
 

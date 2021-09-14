@@ -6,13 +6,19 @@ import * as Auth from '../../../Services/Auth/Auth';
 import ErrorFragment from '../../../Containers/Fragments/ErrorFragment/ErrorFragment';
 import GridForm from '../../GridForm/GridForm';
 import {validateEmailFunc, validatePasswordFunc} from '../../GridForm/GridFromValidators';
+import ForgotPasswordDialog from '../ForgotPasswordDialog/ForgotPasswordDialog';
 import Classes from './SignInDialog.module.css';
+
+const STATES = Object.freeze({
+    SIGN_IN: 1,
+    FORGOT_PASSWORD: 2,
+});
 
 const SignInDialogComponent = (props) => (
     <HeadedDialog isOpen={props.isOpen} onClose={props.doCancel} title="Sign In">
         <GridForm
             onSubmit={(values)=>props.doSignIn(values['email'], values['password'])}
-            onCancel={() => props.doCancel(SignInDialog.CloseReason.CANCEL)}
+            onCancel={props.doCancel}
             inputs={[
                 {
                     name: "email", label: "Email", type: "email", autocomplete: "email",
@@ -27,7 +33,7 @@ const SignInDialogComponent = (props) => (
         />
 
         <div style={{fontSize: "small"}}>
-            <a href="#" onClick={() => props.doCancel(SignInDialog.CloseReason.FORGOT_PASSWORD)}>
+            <a href="#" onClick={() => props.doForgotPassword}>
                 Forgot password!
             </a>
         </div>
@@ -39,6 +45,7 @@ const SignInDialogComponent = (props) => (
 SignInDialogComponent.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     doCancel: PropTypes.func.isRequired,
+    doForgotPassword: PropTypes.func.isRequired,
     errorString: PropTypes.string,
     doSignIn:  PropTypes.func.isRequired,
 };
@@ -48,6 +55,7 @@ SignInDialogComponent.propTypes = {
 const SignInDialog = (props) => {
     const [isBusy, setBusy] = useState(false);
     const [errorString, setErrorString] = useState(null);
+    const [currentState, setCurrentState] = useState(STATES.SIGN_IN);
 
     const doSignIn = async (username, password) => {
         console.debug("Signing in...");
@@ -66,35 +74,50 @@ const SignInDialog = (props) => {
         }
     };
 
+    const doForgotPassword = () => {
+        setCurrentState(STATES.FORGOT_PASSWORD);
+    };
+
     const doCancel = (reason) => {
         setErrorString('');
         props.onClose(reason);
     }
 
+    let dialogEl = null;
+
     if (isBusy) {
-        return (
+        dialogEl = (
             <BusyDialog
                 isOpen={props.isOpen}
-                onClose={() => doCancel(SignInDialog.CloseReason.CANCEL)}
+                onClose={doCancel}
                 title="Sign In"
             />
         );
     }
+    else if (currentState === STATES.SIGN_IN) {
+        dialogEl = (
+            <SignInDialogComponent
+                isOpen={props.isOpen}
+                doCancel={doCancel}
+                doForgotPassword={doForgotPassword}
+                errorString={errorString}
+                doSignIn={doSignIn}
+            />
+        );
+    }
+    else {
+        dialogEl = (
+            <ForgotPasswordDialog
+                isOpen={props.isOpen}
+                onClose={props.onClose}
+                email={props.email}
+                errorString={props.errorString}
+            />
+        );
+    }
 
-    return (
-        <SignInDialogComponent
-            isOpen={props.isOpen}
-            doCancel={doCancel}
-            errorString={errorString}
-            doSignIn={doSignIn}
-        />
-    );
+    return dialogEl;
 };
-
-SignInDialog.CloseReason = Object.freeze({
-    CANCEL: 1,
-    FORGOT_PASSWORD: 2,
-});
 
 export default SignInDialog;
 
