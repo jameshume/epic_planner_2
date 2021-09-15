@@ -14,7 +14,6 @@ const listImmutableUpdate = (srcList, idx, value) => {
 const GridForm = (props) => {
     const [enteredValuesList, setEnteredValuesList] = useState(new Array(props.inputs.length).fill(''));
     const [isTouchedList, setIsTouchedList] = useState(new Array(props.inputs.length).fill(false));
-    console.log("GridForm");
 
     let fieldValues = {}
     for (const [idx, ipDict] of props['inputs'].entries()) {
@@ -27,7 +26,6 @@ const GridForm = (props) => {
     }
 
     const onCancelHandler = () => {
-        console.info("Grid form reseeting values")
         setEnteredValuesList(new Array(props.inputs.length).fill(''));
         setIsTouchedList(new Array(props.inputs.length).fill(false));
         props.onCancel();
@@ -35,7 +33,6 @@ const GridForm = (props) => {
 
     useEffect(() => {
         if ((props.registerCloseListener !== undefined) && (props.registerCloseListener !== null)) {
-            console.log("GridForm: registering close listener")
             props.registerCloseListener(() => () => onCancelHandler());
         }
     }, []);

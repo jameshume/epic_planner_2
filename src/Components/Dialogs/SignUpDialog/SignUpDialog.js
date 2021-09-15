@@ -151,7 +151,6 @@ const SignUpDialog = (props) => {
     };
 
     const doSignUp = async (username, password) => {
-        console.debug(`doSignUp(${username}, ${password})`);
         try {
             await doAction(
                 () => Auth.signUpUser(username, password),
@@ -183,7 +182,6 @@ const SignUpDialog = (props) => {
     };
 
     const doClose = () => {
-        console.debug("Closing sign up dialog");
         setOp(__STATES.SIGN_UP);
         setErrorString(null);
         setEmailValue("");

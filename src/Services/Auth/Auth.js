@@ -32,8 +32,8 @@ export function signUpUser(email, password) {
         const emailAttribute = {Name: 'email', Value: email};
         const attributeList = [new CognitoUserAttribute(emailAttribute)];
         userPool.signUp(email, password, attributeList, null, (err, result) => {
-            if (err) { console.debug(`signupUser.reject()`); reject(err); }
-            else     { console.debug(`signupUser.resolve()`); resolve(result) }
+            if (err) { reject(err); }
+            else     { resolve(result) }
         });
     });
 }
