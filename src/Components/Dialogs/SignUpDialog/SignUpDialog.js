@@ -19,12 +19,12 @@ const __STATES = Object.freeze({
 const EnterUsernameAndPasswordSignupDialog = (props) => {
     return (
         <HeadedDialog isOpen={props.isOpen} onClose={props.doClose} title="Sign Up">
-            <p style={{fontSize: "smaller"}}>
+            <p>
                 Please enter the email address that you would like to use to log into
                 your account. The password must be at least 8 characters long and
                 contain at least 1 symbol, 1 number and 1 capital.
             </p>
-            <p style={{fontSize: "smaller"}}>
+            <p>
                 Once you have registered, a confirmation code will be sent to you email
                 address, which you must then enter to confirm your account. Once this is
                 done you will be able to sign in.
@@ -37,6 +37,7 @@ const EnterUsernameAndPasswordSignupDialog = (props) => {
                     }
                 }
                 onCancel={() => props.doClose()}
+                registerCloseListener={props.registerCloseListener}
                 inputs={[
                     {
                         name: "email", label: "Email", type: "email", autocomplete: "email",
@@ -78,6 +79,7 @@ EnterUsernameAndPasswordSignupDialog.propTypes = {
     passwordValue: PropTypes.string.isRequired,
     errorString: PropTypes.string,
     doSignUp: PropTypes.func.isRequired,
+    registerCloseListener:PropTypes.func.isRequired,
 };
 
 
@@ -91,6 +93,7 @@ const ConfirmUserSignupDialog = (props) => (
         <GridForm
             onSubmit={values => props.doConfirm(props.emailValue, values["conf_code"])}
             onCancel={() => props.doClose()}
+            registerCloseListener={props.registerCloseListener}
             inputs={[
                 {
                     name: "conf_code", label: "Confirmation code", type: "input", autocomplete: "off",
@@ -120,6 +123,7 @@ ConfirmUserSignupDialog.propTypes = {
     confirmationCode: PropTypes.string.isRequired,
     errorString: PropTypes.string,
     doConfirm: PropTypes.func.isRequired,
+    registerCloseListener:PropTypes.func.isRequired,
 };
 
 
@@ -131,6 +135,7 @@ const SignUpDialog = (props) => {
     const [confirmationCode, setConfirmationCode] = useState("");
     const [errorString, setErrorString] = useState(null);
     const [op, setOp] = useState(__STATES.SIGN_UP);
+    const [formResetFunc, setFormResetFunc] = useState(null);
 
     const doAction = async (actionFunc, completeFunc, completeState) => {
         setBusy(true);
@@ -184,6 +189,9 @@ const SignUpDialog = (props) => {
         setEmailValue("");
         setPasswordValue("");
         setConfirmationCode("");
+        if ((formResetFunc !== undefined) && (formResetFunc !== null)) {
+            formResetFunc();
+        }
         props.onClose();
     };
 
@@ -202,6 +210,7 @@ const SignUpDialog = (props) => {
             passwordValue={passwordValue}
             doSignUp={doSignUp}
             errorString={errorString}
+            registerCloseListener={(x) => setFormResetFunc(x)}
         />
     }
     else {
@@ -213,6 +222,7 @@ const SignUpDialog = (props) => {
             confirmationCode={confirmationCode}
             doConfirm={doConfirm}
             errorString={errorString}
+            registerCloseListener={(x) => setFormResetFunc(x)}
         />
     }
 

@@ -20,7 +20,7 @@ const EnterEmailDialog = (props) => (
             confirmation code that will allow you to reset your password.
         </p>
         <GridForm
-            onSubmit={values => props.sendConfirmationEmail(values['email'])}
+            onSubmit={values => props.sendConfirmationCode(values['email'])}
             onCancel={props.onClose}
             inputs={[
                 {
@@ -37,9 +37,12 @@ const EnterEmailDialog = (props) => (
 EnterEmailDialog.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    sendConfirmationEmail: PropTypes.func.isRequired,
+    sendConfirmationCode: PropTypes.func.isRequired,
+    registerCloseListener: PropTypes.func.isRequired,
     errorString: PropTypes.string,
 };
+
+
 
 const EnterResetCodeDialog = (props) => (
     <HeadedDialog isOpen={props.isOpen} onClose={props.onClose} title="Reset Your Password">
@@ -84,7 +87,7 @@ const EnterResetCodeDialog = (props) => (
         <a
             href="#"
             style={{fontSize: "small"}}
-            onClick={(e) => {e.preventDefault(); props.sendConfirmationCode();}}
+            onClick={(e) => {e.preventDefault(); props.sendConfirmationCode(props.email);}}
         >
             Resend confirmation code...
         </a>
@@ -93,50 +96,85 @@ const EnterResetCodeDialog = (props) => (
 );
 
 EnterResetCodeDialog.propTypes = {
-    isOpen: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     sendConfirmationCode: PropTypes.func.isRequired,
+    doConfirmPassword: PropTypes.func.isRequired,
     email: PropTypes.string.isRequired,
-    errorString: PropTypes.string.isRequired,
+    registerCloseListener: PropTypes.func.isRequired,
+    errorString: PropTypes.string,
 };
+
 
 
 const ForgotPasswordDialog = (props) => {
     const [isBusy, setIsBusy] = useState(false);
     const [currentState, setCurrentState] = useState(STATES.ENTER_EMAIL);
     const [errorString, setErrorString] = useState(null);
+    const [email, setEmail] = useState(null);
+    const [formResetFunc, setFormResetFunc] = useState(null);
+
     let dialogEl = null;
 
-    const sendConfirmationCodeToUser = () => {
-        setCurrentState(STATES.BUSY);
+    const _sendConfirmationCodeToUser = async (email) => {
+        setEmail(email);
+        setIsBusy(true);
         try {
-            Auth.userForgotPassword(props.email)
-                .catch(err =>setErrorString(`Failed to send confirmation email: ${err}`));
+            await Auth.userForgotPassword(email);
+            setCurrentState(STATES.WAIT_RESET_CODE);
         }
         catch(err) {
-            setErrorString(`Failed to send confirmation code: ${err}`);
+            setErrorString(`Failed to send confirmation code: ${err.message}`);
         }
-        setCurrentState(STATES.WAIT_RESET_CODE);
+        finally {
+            setIsBusy(false);
+        }
+    }
+    const sendConfirmationCodeToUser = (email) => _sendConfirmationCodeToUser(email);
+
+    const resetPassword = async (email, code, password) => {
+        setIsBusy(true);
+        try {
+            await Auth.userConfirmPassword(email, code, password);
+            setCurrentState(STATES.WAIT_RESET_CODE);
+        }
+        catch(err) {
+            setErrorString(`Failed to send confirmation code: ${err.message}`);
+        }
+        finally {
+            setIsBusy(false);
+        }
     }
 
+    const onClose = () => {
+        if (formResetFunc !== null) {
+            formResetFunc();
+        }
+        props.onClose();
+    };
 
     if (isBusy) {
-        dialogEl =  <BusyDialog isOpen={props.isOpen} onClose={props.onClose} title="Sign Up"/>
+        const title = currentState === STATES.WAIT_RESET_CODE
+            ? "Sending confirmation code" : "Resetting password";
+        dialogEl =  <BusyDialog isOpen={props.isOpen} onClose={props.onClose} title={title}/>
     }
     else if(currentState === STATES.ENTER_EMAIL) {
         dialogEl = <EnterEmailDialog
             isOpen={props.isOpen}
-            onClose={props.onClose}
+            onClose={onClose}
             sendConfirmationCode={sendConfirmationCodeToUser}
+            registerCloseListener={(x) => {setFormResetFunc(x)}}
             errorString={errorString}
         />
     }
     else {
         dialogEl = <EnterResetCodeDialog
             isOpen={props.isOpen}
-            onClose={props.onClose}
+            onClose={onClose}
             sendConfirmationCode={sendConfirmationCodeToUser}
-            email={props.email}
+            doConfirmPassword={resetPassword}
+            registerCloseListener={(x) => {setFormResetFunc(x)}}
+            email={email}
             errorString={errorString}
         />
     }
@@ -145,11 +183,8 @@ const ForgotPasswordDialog = (props) => {
 };
 
 ForgotPasswordDialog.propTypes = {
-    isOpen: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    sendConfirmationCode: PropTypes.func.isRequired,
-    email: PropTypes.string.isRequired,
-    errorString: PropTypes.string.isRequired,
 };
 
 export default ForgotPasswordDialog;

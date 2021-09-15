@@ -1,4 +1,4 @@
-import { useState } from'react';
+import { useState, useEffect } from'react';
 import PropTypes from 'prop-types';
 
 
@@ -14,6 +14,7 @@ const listImmutableUpdate = (srcList, idx, value) => {
 const GridForm = (props) => {
     const [enteredValuesList, setEnteredValuesList] = useState(new Array(props.inputs.length).fill(''));
     const [isTouchedList, setIsTouchedList] = useState(new Array(props.inputs.length).fill(false));
+    console.log("GridForm");
 
     let fieldValues = {}
     for (const [idx, ipDict] of props['inputs'].entries()) {
@@ -26,10 +27,18 @@ const GridForm = (props) => {
     }
 
     const onCancelHandler = () => {
+        console.info("Grid form reseeting values")
         setEnteredValuesList(new Array(props.inputs.length).fill(''));
         setIsTouchedList(new Array(props.inputs.length).fill(false));
         props.onCancel();
     }
+
+    useEffect(() => {
+        if ((props.registerCloseListener !== undefined) && (props.registerCloseListener !== null)) {
+            console.log("GridForm: registering close listener")
+            props.registerCloseListener(() => () => onCancelHandler());
+        }
+    }, []);
 
     let all_touched = true;
     let all_valid = true;
@@ -176,6 +185,7 @@ GridForm.propTypes = {
     },
     onSubmit: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
+    registerCloseListener: PropTypes.func,
 };
 
 export default GridForm;

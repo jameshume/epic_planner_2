@@ -8,14 +8,15 @@ import GridForm from '../../GridForm/GridForm';
 import {validateEmailFunc, validatePasswordFunc} from '../../GridForm/GridFromValidators';
 import ForgotPasswordDialog from '../ForgotPasswordDialog/ForgotPasswordDialog';
 import Classes from './SignInDialog.module.css';
+import { useEffect } from 'react/cjs/react.development';
 
 const STATES = Object.freeze({
     SIGN_IN: 1,
     FORGOT_PASSWORD: 2,
 });
 
-const SignInDialogComponent = (props) => (
-    <HeadedDialog isOpen={props.isOpen} onClose={props.doCancel} title="Sign In">
+const SignInDialogComponent = (props) => {
+    const gridForm = (
         <GridForm
             onSubmit={(values)=>props.doSignIn(values['email'], values['password'])}
             onCancel={props.doCancel}
@@ -29,18 +30,23 @@ const SignInDialogComponent = (props) => (
                     validateFunc: (values) => validatePasswordFunc("password", values)
                 }
             ]}
-            reactKeyPrefix="SignInDialog_"
+            registerCloseListener={props.registerCloseListener}
         />
+    );
 
-        <div style={{fontSize: "small"}}>
-            <a href="#" onClick={() => props.doForgotPassword}>
-                Forgot password!
-            </a>
-        </div>
+    return (
+        <HeadedDialog isOpen={props.isOpen} onClose={props.doCancel} title="Sign In">
+            {gridForm}
+            <div style={{fontSize: "small"}}>
+                <a href="#" onClick={() => props.doForgotPassword()}>
+                    Forgot password!
+                </a>
+            </div>
 
-        <ErrorFragment errorString={props.errorString}/>
-    </HeadedDialog>
-);
+            <ErrorFragment errorString={props.errorString}/>
+        </HeadedDialog>
+    );
+};
 
 SignInDialogComponent.propTypes = {
     isOpen: PropTypes.bool.isRequired,
@@ -48,17 +54,16 @@ SignInDialogComponent.propTypes = {
     doForgotPassword: PropTypes.func.isRequired,
     errorString: PropTypes.string,
     doSignIn:  PropTypes.func.isRequired,
+    registerCloseListener:PropTypes.func.isRequired,
 };
-
-
 
 const SignInDialog = (props) => {
     const [isBusy, setBusy] = useState(false);
     const [errorString, setErrorString] = useState(null);
     const [currentState, setCurrentState] = useState(STATES.SIGN_IN);
+    const [formResetFunc, setFormResetFunc] = useState(null);
 
     const doSignIn = async (username, password) => {
-        console.debug("Signing in...");
         setBusy(true);
         try {
             const token = await Auth.signIn(username, password);
@@ -70,7 +75,6 @@ const SignInDialog = (props) => {
         }
         finally {
             setBusy(false);
-            console.debug("Done signing in");
         }
     };
 
@@ -80,6 +84,10 @@ const SignInDialog = (props) => {
 
     const doCancel = (reason) => {
         setErrorString('');
+        setCurrentState(STATES.SIGN_IN);
+        if ((formResetFunc !== undefined) && (formResetFunc !== null)) {
+            formResetFunc();
+        }
         props.onClose(reason);
     }
 
@@ -102,6 +110,7 @@ const SignInDialog = (props) => {
                 doForgotPassword={doForgotPassword}
                 errorString={errorString}
                 doSignIn={doSignIn}
+                registerCloseListener={(x) => setFormResetFunc(x)}
             />
         );
     }
@@ -109,9 +118,10 @@ const SignInDialog = (props) => {
         dialogEl = (
             <ForgotPasswordDialog
                 isOpen={props.isOpen}
-                onClose={props.onClose}
+                onClose={doCancel}
                 email={props.email}
                 errorString={props.errorString}
+                registerCloseListener={setFormResetFunc}
             />
         );
     }

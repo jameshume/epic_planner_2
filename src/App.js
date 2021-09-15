@@ -59,8 +59,6 @@ const App = (props) => {
                 onSignedIn={(result) => { setUserName(result); setPageState(_STATES.RUNNING) }}
             />
 
-
-
             <div className={Classes.App}>
                 <header>
                     <div style={{width: "100%", height: "100%", gridTemplateColumns: "1fr 1fr 1fr", display: "grid"}}>
